@@ -1,6 +1,6 @@
 use std::num::{IntErrorKind};
 use std::collections::HashMap;
-use лекс::*;
+use лексика::*;
 
 #[derive(Debug)]
 pub enum Тип {

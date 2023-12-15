@@ -5,14 +5,14 @@ use std::process::ExitCode;
 
 #[path="./язык.rs"]
 mod язык;
-#[path="./лекс.rs"]
+#[path="./лексика.rs"]
 #[macro_use]
-mod лекс;
-#[path="./синтакс.rs"]
-mod синтакс;
+mod лексика;
+#[path="./синтаксис.rs"]
+mod синтаксис;
 
-use лекс::{Лексер};
-use синтакс::{разобрать_модуль};
+use лексика::{Лексер};
+use синтаксис::{разобрать_модуль};
 
 fn main() -> ExitCode {
     let mut аргы = env::args();
