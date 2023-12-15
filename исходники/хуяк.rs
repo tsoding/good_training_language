@@ -3,10 +3,10 @@ use std::env;
 use std::io;
 use std::process::ExitCode;
 
-#[path="./язык.rs"]
-mod язык;
-#[path="./лексика.rs"]
+#[path="./диагностика.rs"]
 #[macro_use]
+mod диагностика;
+#[path="./лексика.rs"]
 mod лексика;
 #[path="./синтаксис.rs"]
 mod синтаксис;
