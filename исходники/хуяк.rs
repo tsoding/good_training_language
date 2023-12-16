@@ -10,11 +10,14 @@ mod диагностика;
 mod лексика;
 #[path="./синтаксис.rs"]
 mod синтаксис;
+#[path="./пп.rs"]
+mod пп;
 
-use лексика::{Лексер};
-use синтаксис::{разобрать_модуль};
+use лексика::Лексер;
+use синтаксис::разобрать_модуль;
+use пп::Программа;
 
-fn main() -> ExitCode {
+fn главная() -> Option<()> {
     let mut аргы = env::args();
     let программа = аргы.next().expect("программа");
     let путь_к_файлу = if let Some(путь_к_файлу) = аргы.next() {
@@ -22,7 +25,7 @@ fn main() -> ExitCode {
     } else {
         eprintln!("Пример: {программа} <файл.хуя>");
         eprintln!("ОШИБКА: требуется файл с программой");
-        return ExitCode::FAILURE;
+        return None;
     };
     let содержание: Vec<char> = match fs::read_to_string(&путь_к_файлу) {
         Ok(содержание) => содержание.chars().collect(),
@@ -31,16 +34,20 @@ fn main() -> ExitCode {
                 io::ErrorKind::NotFound => eprintln!("ОШИБКА: файл «{путь_к_файлу}» не найден"),
                 _ => eprintln!("ОШИБКА: не получилось прочитать файл «{путь_к_файлу}»: {ошибка}"),
             }
-            return ExitCode::FAILURE;
+            return None;
         }
     };
     let mut лекс = Лексер::новый(&путь_к_файлу, &содержание);
+    let модуль = разобрать_модуль(&mut лекс)?;
+    let mut программа = Программа::default();
+    программа.скомпилировать_модуль(&модуль)?;
+    программа.интерпретировать("главная")?;
+    Some(())
+}
 
-    if let Some(модуль) = разобрать_модуль(&mut лекс) {
-        for (_, процедура) in модуль.процедуры {
-            println!("{процедура:?}")
-        }
+fn main() -> ExitCode {
+    match главная() {
+        Some(()) => ExitCode::SUCCESS,
+        None => ExitCode::FAILURE,
     }
-
-    ExitCode::SUCCESS
 }
