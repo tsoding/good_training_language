@@ -288,7 +288,7 @@ impl<'a> Лексер<'a> {
 
     pub fn подсмотреть_лексему(&mut self) -> Option<&Лексема> {
         if self.буфер.is_none() {
-            self.буфер = self.следующая_лексема()
+            self.буфер = Some(self.следующая_лексема()?)
         }
         self.буфер.as_ref()
     }
