@@ -29,6 +29,7 @@ impl Тип {
     }
 }
 
+#[derive(Debug)]
 pub struct Переменная {
     pub имя: Лексема,
     pub тип: Тип,
