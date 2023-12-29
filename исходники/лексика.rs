@@ -172,9 +172,9 @@ impl<'a> Лексер<'a> {
             });
         };
 
-        if сим.is_alphabetic() {
+        if сим.is_alphabetic() || сим == '_' {
             let начало = self.позиция;
-            while self.символы.get(self.позиция).map(|сим| сим.is_alphanumeric()).unwrap_or(false) {
+            while self.символы.get(self.позиция).map(|сим| сим.is_alphanumeric() || *сим == '_').unwrap_or(false) {
                 self.отрезать_символ();
             }
             let текст = self.символы[начало..self.позиция].iter().collect();
@@ -224,7 +224,7 @@ impl<'a> Лексер<'a> {
                                 self.отрезать_символ();
                                 текст.push('"');
                             }
-                            // СДЕЛАТЬ: нужно ли экранировать '«'?
+                            // СДЕЛАТЬ: вариант экранирования для «ёлочек»
                             Some('»') => {
                                 self.отрезать_символ();
                                 текст.push('»');
