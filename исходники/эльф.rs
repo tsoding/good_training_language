@@ -2,7 +2,7 @@ use super::Результат;
 use std::fs;
 use std::path::Path;
 use std::io::Write;
-use пп::{Инструкция, Программа};
+use компилятор::{Инструкция, Программа};
 
 #[derive(Debug)]
 struct ЗаплаткаЦелейПрыжков {
