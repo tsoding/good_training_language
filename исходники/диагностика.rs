@@ -1,4 +1,4 @@
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq)]
 pub struct Лок {
     pub путь_к_файлу: String,
     pub строка: usize,
