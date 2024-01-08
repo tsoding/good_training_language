@@ -180,12 +180,19 @@ pub fn сгенерировать(путь_к_файлу: &Path, пп: &ПП, т
                 сгенерировать_заплатку_целей_прыжков_32(&mut код, &mut заплатки_целей_прыжков, индекс_инструкции_пп_цели);
             }
             ВидИнструкции::ПечатьСтроки => {
-                // SYS_write
-                код.extend([0x48, 0xC7, 0xC0, 0x01, 0x00, 0x00, 0x00]); // mov rax, 1
-                код.extend([0x48, 0xC7, 0xC7, 0x01, 0x00, 0x00, 0x00]); // mov rdi, 1
+                код.extend([0x48, 0xC7, 0xC0, 0x01, 0x00, 0x00, 0x00]); // mov rax, 1 ; SYS_write
+                код.extend([0x48, 0xC7, 0xC7, 0x01, 0x00, 0x00, 0x00]); // mov rdi, 1 ; stdout
                 код.extend([0x5e]);                                     // pop rsi
                 код.extend([0x5A]);                                     // pop rdx
                 код.extend([0x0F, 0x05]);                               // syscall
+            }
+            ВидИнструкции::Ввод => {
+                код.extend([0x48, 0xC7, 0xC0, 0x00, 0x00, 0x00, 0x00]); // mov rax, 0 ; SYS_read
+                код.extend([0x48, 0xC7, 0xC7, 0x00, 0x00, 0x00, 0x00]); // mov rdi, 0 ; stdin
+                код.extend([0x5A]);                                     // pop rdx
+                код.extend([0x5e]);                                     // pop rsi
+                код.extend([0x0F, 0x05]);                               // syscall
+                код.extend([0x50]);                                     // push rax
             }
             ВидИнструкции::Возврат => {
                 код.extend([0xC3]); // ret
