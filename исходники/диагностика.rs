@@ -1,25 +1,28 @@
+use std::path::PathBuf;
+
 #[derive(Debug, Clone, PartialEq)]
 pub struct Лок {
-    pub путь_к_файлу: String,
+    pub путь_к_файлу: PathBuf,
     pub строка: usize,
     pub столбец: usize,
 }
 
 macro_rules! здесь {
-    () => {
+    () => {{
+        use std::path::PathBuf;
         ::диагностика::Лок {
-            путь_к_файлу: file!().to_string(),
+            путь_к_файлу: PathBuf::from(file!()),
             строка: line!() as usize,
             столбец: column!() as usize,
         }
-    }
+    }}
 }
 
 macro_rules! диагностика {
     ($лок:expr, $уровень:literal, $($аргы:tt)*) => {{
         let ::диагностика::Лок{путь_к_файлу, строка, столбец} = $лок;
         let уровень = $уровень;
-        eprint!("{путь_к_файлу}:{строка}:{столбец}: {уровень}: ", );
+        eprint!("{путь_к_файлу}:{строка}:{столбец}: {уровень}: ", путь_к_файлу = путь_к_файлу.display());
         eprintln!($($аргы)*);
     }};
 }
