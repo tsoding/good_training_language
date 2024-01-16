@@ -13,11 +13,18 @@ const ЭЛЬФ64_МПБ_СИС5_ИДЕНТ: &[u8] = // e_ident
       0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00];
 
-type Эльф64Пол = u16; // Elf64_Half
+type Эльф64Пол = u16;   // Elf64_Half
+type Эльф64Слово = u32; // Elf64_Word
+
+const ЭЛЬФ_ТЕКУЩАЯ_ВЕРСИЯ: Эльф64Слово = 1; // EV_CURRENT
 
 enum ЭльфТип { // e_type
     Перемещаемый = 1, // ET_REL
     Исполняемый = 2,  // ET_EXEC
+}
+
+enum ЭльфМашина { // e_machine
+    Икс86_64 = 62, // EM_X86_64
 }
 
 #[derive(Debug)]
@@ -250,8 +257,8 @@ pub fn сгенерировать_исполняемый(путь_к_файлу:
     let mut байты: Vec<u8> = Vec::new();
     байты.extend(ЭЛЬФ64_МПБ_СИС5_ИДЕНТ); // e_ident
     байты.extend((ЭльфТип::Исполняемый as Эльф64Пол).to_le_bytes()); // e_type
-    байты.extend(62u16.to_le_bytes()); // e_machine
-    байты.extend(1u32.to_le_bytes()); // e_version
+    байты.extend((ЭльфМашина::Икс86_64 as Эльф64Пол).to_le_bytes()); // e_machine
+    байты.extend(ЭЛЬФ_ТЕКУЩАЯ_ВЕРСИЯ.to_le_bytes()); // e_version
     байты.extend((точка_входа_эльфа + размер_заголовков).to_le_bytes()); // e_entry
     байты.extend(64u64.to_le_bytes()); // e_phoff
     байты.extend(0u64.to_le_bytes()); // e_shoff
@@ -311,6 +318,8 @@ pub fn сгенерировать_объектный(путь_к_файлу: &Pa
     let mut байты: Vec<u8> = Vec::new();
     байты.extend(ЭЛЬФ64_МПБ_СИС5_ИДЕНТ); // e_ident
     байты.extend((ЭльфТип::Перемещаемый as Эльф64Пол).to_le_bytes()); // e_type
+    байты.extend((ЭльфМашина::Икс86_64 as Эльф64Пол).to_le_bytes()); // e_machine
+    байты.extend(ЭЛЬФ_ТЕКУЩАЯ_ВЕРСИЯ.to_le_bytes()); // e_version
 
     let mut файл = fs::File::create(путь_к_файлу).map_err(|ошибка| {
         eprintln!("ОШИБКА: не удалось открыть файл «{путь_к_файлу}»: {ошибка}",
