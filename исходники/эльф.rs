@@ -27,6 +27,10 @@ enum ЭльфМашина { // e_machine
     Икс86_64 = 62, // EM_X86_64
 }
 
+enum СегментТип { // p_type
+    Загружаемый = 1, // PT_LOAD
+}
+
 #[derive(Debug)]
 struct ЗаплаткаЦелейПрыжков {
     адрес_инструкции_прыжка: usize,
@@ -270,8 +274,8 @@ pub fn сгенерировать_исполняемый(путь_к_файлу:
     байты.extend(0u16.to_le_bytes()); // e_shnum
     байты.extend(0u16.to_le_bytes()); // e_shstrndx
 
-    байты.extend(1u32.to_le_bytes()); // p_type
-    байты.extend(7u32.to_le_bytes()); // p_flags
+    байты.extend((СегментТип::Загружаемый as Эльф64Слово).to_le_bytes()); // p_type
+    байты.extend(0b111u32.to_le_bytes()); // p_flags
     байты.extend(0u64.to_le_bytes()); // p_offset
     байты.extend(точка_входа_эльфа.to_le_bytes()); // p_vaddr
     байты.extend(точка_входа_эльфа.to_le_bytes()); // p_paddr
