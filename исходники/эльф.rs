@@ -4,8 +4,10 @@ use std::path::Path;
 use std::io::Write;
 use компилятор::{ВидИнструкции, ПП};
 
-// МПБ - Младшеконечный Порядок Байт (анг. Little-Endian/Least-Significant Byte Order)
-// СПБ - Старшеконечный Порядок Байт (анг. Big-Endian/Most-Significant Byte Order)
+// Все определения для формата Эльф я просто взял из /usr/include/elf.h на моей машине.
+
+// МПБ - Младшеконечный/Младшеразрядный Порядок Байт (анг. Little-Endian/Least-Significant Byte Order)
+// СПБ - Старшеконечный/Старшеразрядный Порядок Байт (анг. Big-Endian/Most-Significant Byte Order)
 // СИС5 - System V
 const ЭЛЬФ64_МПБ_СИС5_ИДЕНТ: &[u8] = // e_ident
     &[0x7f, 0x45, 0x4c, 0x46,
@@ -13,10 +15,15 @@ const ЭЛЬФ64_МПБ_СИС5_ИДЕНТ: &[u8] = // e_ident
       0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00];
 
-type Эльф64Пол = u16;   // Elf64_Half
+type Эльф64Пол   = u16; // Elf64_Half
 type Эльф64Слово = u32; // Elf64_Word
+type Эльф64Адрес = u64; // Elf64_Addr
+type Эльф64Смещ  = u64; // Elf64_Off
 
-const ЭЛЬФ_ТЕКУЩАЯ_ВЕРСИЯ: Эльф64Слово = 1; // EV_CURRENT
+const ЭЛЬФ_ТЕКУЩАЯ_ВЕРСИЯ: usize = 1; // EV_CURRENT
+const ЭЛЬФ64_РАЗМЕР_ЭЛЬФ_ЗАГОЛОВКА: usize = 64; // sizeof(Elf64_Ehdr)
+const ЭЛЬФ64_РАЗМЕР_ПРОГ_ЗАГОЛОВКА: usize = 56; // sizeof(Elf64_Phdr)
+const ЭЛЬФ64_РАЗМЕР_СЕКЦ_ЗАГОЛОВКА: usize = 64; // sizeof(Elf64_Shdr)
 
 enum ЭльфТип { // e_type
     Перемещаемый = 1, // ET_REL
@@ -244,9 +251,8 @@ pub fn сгенерировать_исполняемый(путь_к_файлу:
     }
 
     let размер_заголовка_эльфа = 64;
-    let размер_программного_заголовка = 56;
-    let размер_заголовков: u64 = размер_заголовка_эльфа + размер_программного_заголовка;
-    let точка_входа_эльфа: u64 = 0x400000;
+    let размер_заголовков: u64 = размер_заголовка_эльфа + ЭЛЬФ64_РАЗМЕР_ПРОГ_ЗАГОЛОВКА as u64;
+    let точка_входа_эльфа: Эльф64Адрес = 0x400000;
     let начало_данных = точка_входа_эльфа + размер_заголовков + код.len() as u64;
 
     for ЗаплаткаУказателяНаДанные {
@@ -262,21 +268,21 @@ pub fn сгенерировать_исполняемый(путь_к_файлу:
     байты.extend(ЭЛЬФ64_МПБ_СИС5_ИДЕНТ); // e_ident
     байты.extend((ЭльфТип::Исполняемый as Эльф64Пол).to_le_bytes()); // e_type
     байты.extend((ЭльфМашина::Икс86_64 as Эльф64Пол).to_le_bytes()); // e_machine
-    байты.extend(ЭЛЬФ_ТЕКУЩАЯ_ВЕРСИЯ.to_le_bytes()); // e_version
+    байты.extend((ЭЛЬФ_ТЕКУЩАЯ_ВЕРСИЯ as Эльф64Слово).to_le_bytes()); // e_version
     байты.extend((точка_входа_эльфа + размер_заголовков).to_le_bytes()); // e_entry
-    байты.extend(64u64.to_le_bytes()); // e_phoff
-    байты.extend(0u64.to_le_bytes()); // e_shoff
-    байты.extend(0u32.to_le_bytes()); // e_flags
-    байты.extend(64u16.to_le_bytes()); // e_ehsize
-    байты.extend(56u16.to_le_bytes()); // e_phentsize
-    байты.extend(1u16.to_le_bytes()); // e_phnum
-    байты.extend(64u16.to_le_bytes()); // e_shentsize
-    байты.extend(0u16.to_le_bytes()); // e_shnum
-    байты.extend(0u16.to_le_bytes()); // e_shstrndx
+    байты.extend((ЭЛЬФ64_РАЗМЕР_ЭЛЬФ_ЗАГОЛОВКА as Эльф64Смещ).to_le_bytes()); // e_phoff
+    байты.extend((0 as Эльф64Смещ).to_le_bytes()); // e_shoff
+    байты.extend((0 as Эльф64Слово).to_le_bytes()); // e_flags
+    байты.extend((ЭЛЬФ64_РАЗМЕР_ЭЛЬФ_ЗАГОЛОВКА as Эльф64Пол).to_le_bytes()); // e_ehsize
+    байты.extend((ЭЛЬФ64_РАЗМЕР_ПРОГ_ЗАГОЛОВКА as Эльф64Пол).to_le_bytes()); // e_phentsize
+    байты.extend((1 as Эльф64Пол).to_le_bytes()); // e_phnum // ЗАМЕЧАНИЕ: В данном режиме мы генерируем всегда один программный сегмент
+    байты.extend((ЭЛЬФ64_РАЗМЕР_СЕКЦ_ЗАГОЛОВКА as Эльф64Пол).to_le_bytes()); // e_shentsize
+    байты.extend((0 as Эльф64Пол).to_le_bytes()); // e_shnum
+    байты.extend((0 as Эльф64Пол).to_le_bytes()); // e_shstrndx
 
     байты.extend((СегментТип::Загружаемый as Эльф64Слово).to_le_bytes()); // p_type
-    байты.extend(0b111u32.to_le_bytes()); // p_flags
-    байты.extend(0u64.to_le_bytes()); // p_offset
+    байты.extend((0b111 as Эльф64Слово).to_le_bytes()); // p_flags
+    байты.extend((0 as Эльф64Смещ).to_le_bytes()); // p_offset
     байты.extend(точка_входа_эльфа.to_le_bytes()); // p_vaddr
     байты.extend(точка_входа_эльфа.to_le_bytes()); // p_paddr
     байты.extend((размер_заголовков + код.len() as u64 + пп.иниц_данные.len() as u64).to_le_bytes()); // p_filesz
@@ -323,7 +329,17 @@ pub fn сгенерировать_объектный(путь_к_файлу: &Pa
     байты.extend(ЭЛЬФ64_МПБ_СИС5_ИДЕНТ); // e_ident
     байты.extend((ЭльфТип::Перемещаемый as Эльф64Пол).to_le_bytes()); // e_type
     байты.extend((ЭльфМашина::Икс86_64 as Эльф64Пол).to_le_bytes()); // e_machine
-    байты.extend(ЭЛЬФ_ТЕКУЩАЯ_ВЕРСИЯ.to_le_bytes()); // e_version
+    байты.extend((ЭЛЬФ_ТЕКУЩАЯ_ВЕРСИЯ as Эльф64Слово).to_le_bytes()); // e_version
+    байты.extend((0 as Эльф64Адрес).to_le_bytes()); // e_entry
+    байты.extend((0 as Эльф64Смещ).to_le_bytes()); // e_phoff
+    байты.extend((0 as Эльф64Смещ).to_le_bytes()); // e_shoff // СДЕЛАТЬ: здесь будет находиться смещение для секций
+    байты.extend((0 as Эльф64Слово).to_le_bytes()); // e_flags
+    байты.extend((ЭЛЬФ64_РАЗМЕР_ЭЛЬФ_ЗАГОЛОВКА as Эльф64Пол).to_le_bytes()); // e_ehsize
+    байты.extend((0 as Эльф64Пол).to_le_bytes()); // e_phentsize
+    байты.extend((0 as Эльф64Пол).to_le_bytes()); // e_phnum
+    байты.extend((ЭЛЬФ64_РАЗМЕР_СЕКЦ_ЗАГОЛОВКА as Эльф64Пол).to_le_bytes()); // e_shentsize
+    байты.extend((0 as Эльф64Пол).to_le_bytes()); // e_shnum // СДЕЛАТЬ: здесь будет находиться количество секций
+    байты.extend((0 as Эльф64Пол).to_le_bytes()); // e_shstrndx // СДЕЛАТЬ: здесь будет находиться индекс секции со строками
 
     let mut файл = fs::File::create(путь_к_файлу).map_err(|ошибка| {
         eprintln!("ОШИБКА: не удалось открыть файл «{путь_к_файлу}»: {ошибка}",
