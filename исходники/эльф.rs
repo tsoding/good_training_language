@@ -27,7 +27,6 @@ const ЭЛЬФ_ТЕКУЩАЯ_ВЕРСИЯ: usize = 1; // EV_CURRENT
 const ЭЛЬФ64_РАЗМЕР_ЭЛЬФ_ЗАГОЛОВКА: usize = 64; // sizeof(Elf64_Ehdr)
 const ЭЛЬФ64_РАЗМЕР_ПРОГ_ЗАГОЛОВКА: usize = 56; // sizeof(Elf64_Phdr)
 const ЭЛЬФ64_РАЗМЕР_СЕКЦ_ЗАГОЛОВКА: usize = 64; // sizeof(Elf64_Shdr)
-const ЭЛЬФ64_РАЗМЕР_ЗАПИСИ_СИМВОЛА: usize = 24; // sizeof(Elf64_Sym)
 
 enum ЭльфТип { // e_type
     Перемещаемый = 1, // ET_REL
@@ -328,11 +327,6 @@ pub fn сгенерировать_исполняемый_файл(путь_к_ф
     }
 }
 
-fn выравнять_байты(байты: &mut Vec<u8>, выравнивание: usize) {
-    let новый_размер = (байты.len() + выравнивание - 1)/выравнивание*выравнивание;
-    байты.resize(новый_размер, 0);
-}
-
 #[derive(Clone, Copy)]
 enum ТипСекции { // sh_type
     Пустая = 0,          // SHT_NULL
@@ -406,14 +400,11 @@ impl Секция {
 #[derive(Clone, Copy)]
 enum ТипСимвола {
     Никакой = 0,                // STT_NOTYPE
-    Функция = 2,                // STT_FUNC
-    Секция = 3,                 // STT_SECTION
 }
 
 #[derive(Clone, Copy)]
 enum СвязьСимвола {
     Локальная = 0,              // STB_LOCAL
-    Глобальная = 1,             // STB_GLOBAL
 }
 
 fn символ_инфо(связь: СвязьСимвола, тип: ТипСимвола) -> u8 { // ELF64_ST_INFO(bind, type)
