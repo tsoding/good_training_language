@@ -42,6 +42,12 @@ pub fn сгенерировать_исполняемый_файл(путь_к_и
                     let _ = writeln!(&mut файл, "    pop rax");
                 }
             }
+            ВидИнструкции::Обменять => {
+                let _ = writeln!(&mut файл, "    pop rax");
+                let _ = writeln!(&mut файл, "    pop rbx");
+                let _ = writeln!(&mut файл, "    push rax");
+                let _ = writeln!(&mut файл, "    push rbx");
+            }
             ВидИнструкции::СохранитьКадр => {
                 let _ = writeln!(&mut файл, "    push rbp");
                 let _ = writeln!(&mut файл, "    mov rbp, rsp");
