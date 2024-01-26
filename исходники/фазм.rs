@@ -71,6 +71,11 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    mov [rsi], al");
             }
+            ВидИнструкции::Записать32 => {
+                let _ = writeln!(файл, "    pop rsi");
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    mov [rsi], eax");
+            }
             ВидИнструкции::Записать64 => {
                 let _ = writeln!(файл, "    pop rsi");
                 let _ = writeln!(файл, "    pop rax");
@@ -139,6 +144,10 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    cmp rax, rbx");
                 let _ = writeln!(файл, "    setz cl");
                 let _ = writeln!(файл, "    push rcx");
+            }
+            ВидИнструкции::КонвертЦел64Вещ32 => {
+                сделать!(&инструкция.лок, "Кодогенерация инструкции КонвертЦел64Вещ32 для фазм");
+                return Err(());
             }
             ВидИнструкции::ЛогОтрицание => {
                 let _ = writeln!(файл, "    xor rbx, rbx");
