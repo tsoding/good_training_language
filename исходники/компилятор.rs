@@ -1,7 +1,7 @@
 /// Промежуточное Представление
 
 use super::Результат;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use std::path::PathBuf;
 use синтаксис::*;
 use диагностика::*;
@@ -106,7 +106,7 @@ pub struct ПП {
     pub заплатки_неиниц_указателей: Vec<usize>,
     pub строки: HashMap<String, usize>,
     pub внешние_символы: HashMap<String, usize>,
-    pub библиотеки: HashSet<String>,
+    pub библиотеки: HashMap<String, usize>,
 }
 
 impl ПП {
@@ -1086,7 +1086,7 @@ impl Программа {
                 }
                 ВидЛексемы::КлючБибл => {
                     let имя = лекс.вытащить_лексему_вида(&[ВидЛексемы::Идент])?;
-                    self.пп.библиотеки.insert(имя.текст.clone());
+                    self.пп.библиотеки.insert(имя.текст.clone(), self.пп.библиотеки.len());
                     let _ = лекс.вытащить_лексему_вида(&[ВидЛексемы::ТочкаЗапятая])?;
                 }
                 ВидЛексемы::Конец => break,
