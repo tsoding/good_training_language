@@ -152,20 +152,35 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    push rcx");
             }
             ВидИнструкции::КонвертЦел64Вещ32 => {
-                сделать!(&инструкция.лок, "Кодогенерация инструкции КонвертЦел64Вещ32 для фазм");
-                return Err(());
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    pxor xmm0, xmm0");
+                let _ = writeln!(файл, "    cvtsi2ss xmm0, rax");
+                let _ = writeln!(файл, "    movd eax, xmm0");
+                let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::КонвертВещ32Цел64 => {
-                сделать!(&инструкция.лок, "Кодогенерация инструкции КонвертВещ32Цел64 для фазм");
-                return Err(());
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    movd xmm0, eax");
+                let _ = writeln!(файл, "    cvttss2si rax, xmm0");
+                let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::Вещ32Умножение => {
-                сделать!(&инструкция.лок, "Кодогенерация инструкции Вещ32Умножение для фазм");
-                return Err(());
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    movd xmm0, eax");
+                let _ = writeln!(файл, "    movd xmm1, ebx");
+                let _ = writeln!(файл, "    mulss xmm0, xmm1");
+                let _ = writeln!(файл, "    movd eax, xmm0");
+                let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::Вещ32Сложение => {
-                сделать!(&инструкция.лок, "Кодогенерация инструкции Вещ32Сложение для фазм");
-                return Err(());
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    movd xmm0, eax");
+                let _ = writeln!(файл, "    movd xmm1, ebx");
+                let _ = writeln!(файл, "    addss xmm0, xmm1");
+                let _ = writeln!(файл, "    movd eax, xmm0");
+                let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::ЛогОтрицание => {
                 let _ = writeln!(файл, "    xor rbx, rbx");
@@ -210,6 +225,10 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                         Тип::Цел64 | Тип::Лог => {
                             let _ = writeln!(файл, "    push rax");
                         },
+                        Тип::Вещ32 => {
+                            let _ = writeln!(файл, "    movd eax, xmm0");
+                            let _ = writeln!(файл, "    push rax");
+                        }
                         _ => {
                             сделать!(&инструкция.лок, "Кодогенерация возврата типа «{тип}» из внешних процедур",
                                      тип = результат.текст());
@@ -290,7 +309,9 @@ pub fn сгенерировать_исполняемый_файл(путь_к_и
     }
     let _ = writeln!(&mut файл, "    rb {}", пп.размер_неиниц_данных);
 
-    let _ = writeln!(&mut файл, "section \".note.GNU-stack\"");
+    if !статический {
+        let _ = writeln!(&mut файл, "section \".note.GNU-stack\"");
+    }
 
     drop(файл);
     println!("ИНФО: сгенерирован файл «{путь_к_фазму}»",
