@@ -218,20 +218,35 @@ pub fn сгенерировать_исполняемый_файл(путь_к_ф
                 код.extend([0x50]);             // push rax
             }
             ВидИнструкции::КонвертЦел64Вещ32 => {
-                сделать!(&инструкция.лок, "Кодогенерация инструкции КонвертЦел64Вещ32 для эльф");
-                return Err(());
+                код.extend([0x58]);                         // pop rax
+                код.extend([0x66, 0x0F, 0xEF, 0xC0]);       // pxor xmm0, xmm0
+                код.extend([0xF3, 0x48, 0x0F, 0x2A, 0xC0]); // cvtsi2ss xmm0, rax
+                код.extend([0x66, 0x0F, 0x7E, 0xC0]);       // movd eax, xmm0
+                код.extend([0x50]);                         // push rax
             }
             ВидИнструкции::КонвертВещ32Цел64 => {
-                сделать!(&инструкция.лок, "Кодогенерация инструкции КонвертВещ32Цел64 для эльф");
-                return Err(());
+                код.extend([0x58]);                         // pop rax
+                код.extend([0x66, 0x0f, 0x6e, 0xc0]);       // movd xmm0, eax
+                код.extend([0xf3, 0x48, 0x0f, 0x2c, 0xc0]); // cvttss2si rax, xmm0
+                код.extend([0x50]);                         // push rax
             }
             ВидИнструкции::Вещ32Умножение => {
-                сделать!(&инструкция.лок, "Кодогенерация инструкции Вещ32Умножение для эльф");
-                return Err(());
+                код.extend([0x58]);                   // pop rax
+                код.extend([0x5B]);                   // pop rbx
+                код.extend([0x66, 0x0f, 0x6e, 0xc0]); // movd xmm0, eax
+                код.extend([0x66, 0x0f, 0x6e, 0xcb]); // movd xmm1, ebx
+                код.extend([0xf3, 0x0f, 0x59, 0xc1]); // mulss xmm0, xmm1
+                код.extend([0x66, 0x0f, 0x7e, 0xc0]); // movd eax, xmm0
+                код.extend([0x50]);                   // push rax
             }
             ВидИнструкции::Вещ32Сложение => {
-                сделать!(&инструкция.лок, "Кодогенерация инструкции Вещ32Сложение для эльф");
-                return Err(());
+                код.extend([0x58]);                   // pop rax
+                код.extend([0x5B]);                   // pop rbx
+                код.extend([0x66, 0x0f, 0x6e, 0xc0]); // movd xmm0, eax
+                код.extend([0x66, 0x0f, 0x6e, 0xcb]); // movd xmm1, ebx
+                код.extend([0xf3, 0x0f, 0x58, 0xc1]); // addss xmm0, xmm1
+                код.extend([0x66, 0x0f, 0x7e, 0xc0]); // movd eax, xmm0
+                код.extend([0x50]);                   // push rax
             }
             ВидИнструкции::ЛогОтрицание => {
                 код.extend([0x48, 0x31, 0xDB]); // xor rbx, rbx
