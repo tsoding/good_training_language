@@ -249,16 +249,31 @@ pub fn сгенерировать_исполняемый_файл(путь_к_ф
                 код.extend([0x50]);                   // push rax
             }
             ВидИнструкции::Вещ32Меньше => {
-                сделать!(&инструкция.лок, "Кодогенерация Вещ32Меньше для эльф");
-                return Err(());
+                код.extend([0x5B]);                         // pop rbx
+                код.extend([0x58]);                         // pop rax
+                код.extend([0x66, 0x0f, 0x6e, 0xc0]);       // movd xmm0, eax
+                код.extend([0x66, 0x0f, 0x6e, 0xcb]);       // movd xmm1, ebx
+                код.extend([0xf3, 0x0f, 0xc2, 0xc1, 0x01]); // cmpltss xmm0, xmm1
+                код.extend([0x66, 0x0f, 0x7e, 0xc0]);       // movd eax, xmm0
+                код.extend([0x50]);                         // push rax
             }
             ВидИнструкции::Вещ32Больше => {
-                сделать!(&инструкция.лок, "Кодогенерация Вещ32Больше для эльф");
-                return Err(());
+                код.extend([0x5B]);                         // pop rbx
+                код.extend([0x58]);                         // pop rax
+                код.extend([0x66, 0x0f, 0x6e, 0xc0]);       // movd xmm0, eax
+                код.extend([0x66, 0x0f, 0x6e, 0xcb]);       // movd xmm1, ebx
+                код.extend([0xf3, 0x0f, 0xc2, 0xc1, 0x05]); // cmpnltss xmm0, xmm1
+                код.extend([0x66, 0x0f, 0x7e, 0xc0]);       // movd eax, xmm0
+                код.extend([0x50]);                         // push rax
             }
             ВидИнструкции::Вещ32Инверт => {
-                сделать!(&инструкция.лок, "Кодогенерация Вещ32Инверт для эльф");
-                return Err(());
+                код.extend([0xb8, 0x00, 0x00, 0x00, 0x80]); // mov eax, 0x80000000
+                код.extend([0x5B]);                         // pop rbx
+                код.extend([0x66, 0x0f, 0x6e, 0xc3]);       // movd xmm0, ebx
+                код.extend([0x66, 0x0f, 0x6e, 0xc8]);       // movd xmm1, eax
+                код.extend([0x66, 0x0f, 0xef, 0xc1]);       // pxor xmm0, xmm1
+                код.extend([0x66, 0x0f, 0x7e, 0xc0]);       // movd eax, xmm0
+                код.extend([0x50]);                         // push rax
             }
             ВидИнструкции::ЛогОтрицание => {
                 код.extend([0x48, 0x31, 0xDB]); // xor rbx, rbx
