@@ -182,12 +182,26 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    movd eax, xmm0");
                 let _ = writeln!(файл, "    push rax");
             }
+            ВидИнструкции::Вещ32Меньше => {
+                сделать!(&инструкция.лок, "Кодогенерация инструкции Вещ32Меньше для фазм");
+                return Err(())
+            }
+            ВидИнструкции::Вещ32Больше => {
+                сделать!(&инструкция.лок, "Кодогенерация инструкции Вещ32Больше для фазм");
+                return Err(())
+            }
             ВидИнструкции::ЛогОтрицание => {
                 let _ = writeln!(файл, "    xor rbx, rbx");
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    test rax, rax");
                 let _ = writeln!(файл, "    setz bl");
                 let _ = writeln!(файл, "    push rbx");
+            }
+            ВидИнструкции::БитИли => {
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    or rax, rbx");
+                let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::ПечатьСтроки => {
                 let _ = writeln!(файл, "    mov rax, 1 ; SYS_write");
