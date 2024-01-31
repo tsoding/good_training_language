@@ -26,11 +26,6 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    mov rax, {значение}");
                 let _ = writeln!(файл, "    push rax");
             }
-            ВидИнструкции::ПротолкнутьВещ32(значение) => {
-                let значение = u32::from_le_bytes(значение.to_le_bytes());
-                let _ = writeln!(файл, "    mov eax, {значение:#X}");
-                let _ = writeln!(файл, "    push rax");
-            }
             ВидИнструкции::ПротолкнутьУказатель(указатель) => {
                 let _ = writeln!(файл, "    mov rax, данные+{указатель}");
                 let _ = writeln!(файл, "    push rax");
