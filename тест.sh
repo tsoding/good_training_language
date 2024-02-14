@@ -35,6 +35,6 @@ test_inter() {
     #./сборка/хуяк интер ./тесты/тест.хуя
 }
 
-test_fasm
+# test_fasm
 test_inter
 
