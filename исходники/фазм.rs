@@ -33,15 +33,6 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    mov rax, данные+{указатель}");
                 let _ = writeln!(файл, "    push rax");
             }
-            &ВидИнструкции::Вытолкнуть => {
-                let _ = writeln!(файл, "    pop rax");
-            }
-            ВидИнструкции::Обменять => {
-                let _ = writeln!(файл, "    pop rax");
-                let _ = writeln!(файл, "    pop rbx");
-                let _ = writeln!(файл, "    push rax");
-                let _ = writeln!(файл, "    push rbx");
-            }
             ВидИнструкции::ВыделитьНаВторомСтеке(размер) => {
                 let _ = writeln!(файл, "    sub r12, {размер}");
             }
