@@ -72,7 +72,7 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
             ВидИнструкции::АргументСоСтека => {
                 let _ = writeln!(файл, "    mov rax, [r12]");
                 let _ = writeln!(файл, "    push rax");
-                let _ = writeln!(файл, "    adda r12, 8");
+                let _ = writeln!(файл, "    add r12, 8");
             }
             ВидИнструкции::Записать8 => {
                 let _ = writeln!(файл, "    pop rsi");
