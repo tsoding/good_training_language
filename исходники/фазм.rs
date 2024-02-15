@@ -234,11 +234,13 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::ПечатьСтроки => {
-                let _ = writeln!(файл, "    mov rax, 1 ; SYS_write");
-                let _ = writeln!(файл, "    mov rdi, 1 ; stdout");
-                let _ = writeln!(файл, "    pop rsi");
-                let _ = writeln!(файл, "    pop rdx");
-                let _ = writeln!(файл, "    syscall");
+                сделать!(&инструкция.лок, "Обновить реализацию инструкции ПечатьСтроки");
+                // let _ = writeln!(файл, "    mov rax, 1 ; SYS_write");
+                // let _ = writeln!(файл, "    mov rdi, 1 ; stdout");
+                // let _ = writeln!(файл, "    pop rsi");
+                // let _ = writeln!(файл, "    pop rdx");
+                // let _ = writeln!(файл, "    syscall");
+                return Err(());
             }
             ВидИнструкции::Ввод => {
                 let _ = writeln!(файл, "    mov rax, 0 ; SYS_read");
