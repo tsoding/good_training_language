@@ -18,6 +18,9 @@ pub enum Тип {
     Срез { тип_элемента: Box<Тип> },
 }
 
+pub const СРЕЗ_РАЗМЕР_СМЕЩЕНИЕ: usize = 0;
+pub const СРЕЗ_АДРЕС_СМЕЩЕНИЕ: usize = 8;
+
 impl Тип {
     pub fn примитивный(&self) -> bool {
         match self {

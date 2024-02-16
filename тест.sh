@@ -37,5 +37,3 @@ test_inter() {
 
 test_fasm
 test_inter
-
-

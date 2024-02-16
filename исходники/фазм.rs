@@ -4,7 +4,7 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 use компилятор::ПП;
 use компилятор::ВидИнструкции;
-use типизация::Тип;
+use типизация::*;
 use Результат;
 
 fn сгенерировать_инструкции(файл: &mut impl Write, пп: &ПП, точка_входа_программы: usize) -> Результат<()> {
@@ -33,23 +33,16 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    mov rax, данные+{указатель}");
                 let _ = writeln!(файл, "    push rax");
             }
-            &ВидИнструкции::Вытолкнуть => {
-                let _ = writeln!(файл, "    pop rax");
-            }
-            ВидИнструкции::Обменять => {
-                let _ = writeln!(файл, "    pop rax");
-                let _ = writeln!(файл, "    pop rbx");
-                let _ = writeln!(файл, "    push rax");
-                let _ = writeln!(файл, "    push rbx");
-            }
             ВидИнструкции::ВыделитьНаВторомСтеке(размер) => {
                 let _ = writeln!(файл, "    sub r12, {размер}");
             }
             ВидИнструкции::ОсвободитьСоВторогоСтека(размер) => {
                 let _ = writeln!(файл, "    add r12, {размер}");
             }
-            ВидИнструкции::ВершинаВторогоСтека(_смещение) => {
-                let _ = writeln!(файл, "    push r12");
+            ВидИнструкции::ВершинаВторогоСтека(смещение) => {
+                let _ = writeln!(файл, "    mov rax, r12");
+                let _ = writeln!(файл, "    add rax, {смещение}");
+                let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::СохранитьКадрВторогоСтека => {
                 let _ = writeln!(файл, "    mov rax, r13");
@@ -61,8 +54,10 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    mov r13, [r12]");
                 let _ = writeln!(файл, "    add r12, 8");
             }
-            ВидИнструкции::КадрВторогоСтека(_смещение) => {
-                let _ = writeln!(файл, "    push r13");
+            ВидИнструкции::КадрВторогоСтека(смещение) => {
+                let _ = writeln!(файл, "    mov rax, r13");
+                let _ = writeln!(файл, "    add rax, {смещение}");
+                let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::АргументНаСтек => {
                 let _ = writeln!(файл, "    pop rax");
@@ -243,10 +238,11 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::ПечатьСтроки => {
+                let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    mov rsi, [rbx+{}]", СРЕЗ_АДРЕС_СМЕЩЕНИЕ);
+                let _ = writeln!(файл, "    mov rdx, [rbx+{}]", СРЕЗ_РАЗМЕР_СМЕЩЕНИЕ);
                 let _ = writeln!(файл, "    mov rax, 1 ; SYS_write");
                 let _ = writeln!(файл, "    mov rdi, 1 ; stdout");
-                let _ = writeln!(файл, "    pop rsi");
-                let _ = writeln!(файл, "    pop rdx");
                 let _ = writeln!(файл, "    syscall");
             }
             ВидИнструкции::Ввод => {
@@ -300,11 +296,6 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
             }
             ВидИнструкции::СисВызов{..} => {
                 let _ = writeln!(файл, "    ;;; СДЕЛАТЬ");
-            }
-            ВидИнструкции::Стоп => {
-                let _ = writeln!(файл, "    mov rax, 60");
-                let _ = writeln!(файл, "    mov rdi, 0");
-                let _ = writeln!(файл, "    syscall");
             }
         }
     }
