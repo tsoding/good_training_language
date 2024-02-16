@@ -4,7 +4,7 @@ use std::path::Path;
 use std::process::{Command, Stdio};
 use компилятор::ПП;
 use компилятор::ВидИнструкции;
-use типизация::Тип;
+use типизация::*;
 use Результат;
 
 fn сгенерировать_инструкции(файл: &mut impl Write, пп: &ПП, точка_входа_программы: usize) -> Результат<()> {
@@ -234,13 +234,12 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::ПечатьСтроки => {
-                сделать!(&инструкция.лок, "Обновить реализацию инструкции ПечатьСтроки");
-                // let _ = writeln!(файл, "    mov rax, 1 ; SYS_write");
-                // let _ = writeln!(файл, "    mov rdi, 1 ; stdout");
-                // let _ = writeln!(файл, "    pop rsi");
-                // let _ = writeln!(файл, "    pop rdx");
-                // let _ = writeln!(файл, "    syscall");
-                return Err(());
+                let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    mov rsi, [rbx+{}]", СРЕЗ_АДРЕС_СМЕЩЕНИЕ);
+                let _ = writeln!(файл, "    mov rdx, [rbx+{}]", СРЕЗ_РАЗМЕР_СМЕЩЕНИЕ);
+                let _ = writeln!(файл, "    mov rax, 1 ; SYS_write");
+                let _ = writeln!(файл, "    mov rdi, 1 ; stdout");
+                let _ = writeln!(файл, "    syscall");
             }
             ВидИнструкции::Ввод => {
                 let _ = writeln!(файл, "    mov rax, 0 ; SYS_read");
