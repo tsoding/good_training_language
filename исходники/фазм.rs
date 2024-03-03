@@ -99,8 +99,11 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::СкопироватьПамять => {
-                сделать!(&инструкция.лок, "Реализовать кодогенерацию инстуркции {вид_инструкции:?}", вид_инструкции = инструкция.вид);
-                return Err(())
+                let _ = writeln!(файл, "    cld");
+                let _ = writeln!(файл, "    pop rcx");
+                let _ = writeln!(файл, "    pop rdi");
+                let _ = writeln!(файл, "    pop rsi");
+                let _ = writeln!(файл, "    rep movsb");
             }
             ВидИнструкции::ЦелСложение => {
                 let _ = writeln!(файл, "    pop rbx");
@@ -239,6 +242,24 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    pop rbx");
                 let _ = writeln!(файл, "    or rax, rbx");
+                let _ = writeln!(файл, "    push rax");
+            }
+            ВидИнструкции::БитИ => {
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    and rax, rbx");
+                let _ = writeln!(файл, "    push rax");
+            }
+            ВидИнструкции::БитСмещениеВлево => {
+                let _ = writeln!(файл, "    pop rcx");
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    shl rax, cl");
+                let _ = writeln!(файл, "    push rax");
+            }
+            ВидИнструкции::БитСмещениеВправо => {
+                let _ = writeln!(файл, "    pop rcx");
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    shr rax, cl");
                 let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::ПечатьСтроки => {
