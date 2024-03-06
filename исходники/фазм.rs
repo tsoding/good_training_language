@@ -25,7 +25,7 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                          вид_инструкции = инструкция.вид);
         match &инструкция.вид {
             ВидИнструкции::Ноп => {}
-            ВидИнструкции::Целое(значение) => {
+            ВидИнструкции::Натуральное(значение) => {
                 let _ = writeln!(файл, "    mov rax, {значение}");
                 let _ = writeln!(файл, "    push rax");
             }
@@ -105,40 +105,40 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    pop rsi");
                 let _ = writeln!(файл, "    rep movsb");
             }
-            ВидИнструкции::ЦелСложение => {
+            ВидИнструкции::НатСложение => {
                 let _ = writeln!(файл, "    pop rbx");
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    add rax, rbx");
                 let _ = writeln!(файл, "    push rax");
             }
-            ВидИнструкции::ЦелВычитание => {
+            ВидИнструкции::НатВычитание => {
                 let _ = writeln!(файл, "    pop rbx");
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    sub rax, rbx");
                 let _ = writeln!(файл, "    push rax");
             }
-            ВидИнструкции::ЦелУмножение => {
+            ВидИнструкции::НатУмножение => {
                 let _ = writeln!(файл, "    pop rbx");
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    xor rdx, rdx");
                 let _ = writeln!(файл, "    mul rbx");
                 let _ = writeln!(файл, "    push rax");
             }
-            ВидИнструкции::ЦелДеление => {
+            ВидИнструкции::НатДеление => {
                 let _ = writeln!(файл, "    pop rbx");
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    xor rdx, rdx");
                 let _ = writeln!(файл, "    div rbx");
                 let _ = writeln!(файл, "    push rax");
             }
-            ВидИнструкции::ЦелОстаток => {
+            ВидИнструкции::НатОстаток => {
                 let _ = writeln!(файл, "    pop rbx");
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    xor rdx, rdx");
                 let _ = writeln!(файл, "    div rbx");
                 let _ = writeln!(файл, "    push rdx");
             }
-            ВидИнструкции::ЦелМеньше => {
+            ВидИнструкции::НатМеньше => {
                 let _ = writeln!(файл, "    pop rbx");
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    xor rcx, rcx");
@@ -148,7 +148,7 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 // СДЕЛАТЬ: можно ли использовать условное
                 // перемещение для реализации инструкций сравнения?
             }
-            ВидИнструкции::ЦелБольше => {
+            ВидИнструкции::НатБольше => {
                 let _ = writeln!(файл, "    pop rbx");
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    xor rcx, rcx");
@@ -156,7 +156,7 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    seta cl");
                 let _ = writeln!(файл, "    push rcx");
             }
-            ВидИнструкции::ЦелРавно => {
+            ВидИнструкции::НатРавно => {
                 let _ = writeln!(файл, "    pop rbx");
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    xor rcx, rcx");
@@ -164,14 +164,14 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    setz cl");
                 let _ = writeln!(файл, "    push rcx");
             }
-            ВидИнструкции::КонвертЦел64Вещ32 => {
+            ВидИнструкции::КонвертНат64Вещ32 => {
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    pxor xmm0, xmm0");
                 let _ = writeln!(файл, "    cvtsi2ss xmm0, rax");
                 let _ = writeln!(файл, "    movd eax, xmm0");
                 let _ = writeln!(файл, "    push rax");
             }
-            ВидИнструкции::КонвертВещ32Цел64 => {
+            ВидИнструкции::КонвертВещ32Нат64 => {
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    movd xmm0, eax");
                 let _ = writeln!(файл, "    cvttss2si rax, xmm0");
@@ -296,7 +296,7 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    call {имя}", имя = внешние_символы[*индекс].0);
                 if let Some(результат) = результат {
                     match результат {
-                        Тип::Цел64 | Тип::Лог => {
+                        Тип::Нат64 | Тип::Лог => {
                             let _ = writeln!(файл, "    push rax");
                         },
                         Тип::Вещ32 => {
