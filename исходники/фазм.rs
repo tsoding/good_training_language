@@ -164,6 +164,19 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    setz cl");
                 let _ = writeln!(файл, "    push rcx");
             }
+            ВидИнструкции::ЦелМеньше => {
+                let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    xor rcx, rcx");
+                let _ = writeln!(файл, "    cmp rax, rbx");
+                let _ = writeln!(файл, "    setl cl");
+                let _ = writeln!(файл, "    push rcx");
+            }
+            ВидИнструкции::ЦелОтриц => {
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    neg rax");
+                let _ = writeln!(файл, "    push rax");
+            }
             ВидИнструкции::КонвертНат64Вещ32 => {
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    pxor xmm0, xmm0");
@@ -222,7 +235,7 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    movd eax, xmm0");
                 let _ = writeln!(файл, "    push rax");
             }
-            ВидИнструкции::Вещ32Инверт => {
+            ВидИнструкции::Вещ32Отриц => {
                 let _ = writeln!(файл, "    mov eax, 0x80000000");
                 let _ = writeln!(файл, "    pop rbx");
                 let _ = writeln!(файл, "    movd xmm0, ebx");
