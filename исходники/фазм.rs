@@ -324,6 +324,23 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    setz bl");
                 let _ = writeln!(файл, "    push rbx");
             }
+            ВидИнструкции::ЛогИ => {
+                let _ = writeln!(файл, "    xor rbx, rbx");
+                let _ = writeln!(файл, "    xor rcx, rcx");
+
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    test rax, rax");
+                let _ = writeln!(файл, "    setz bl");
+                let _ = writeln!(файл, "    xor rbx, 1");
+
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    test rax, rax");
+                let _ = writeln!(файл, "    setz cl");
+                let _ = writeln!(файл, "    xor rcx, 1");
+
+                let _ = writeln!(файл, "    and rbx, rcx");
+                let _ = writeln!(файл, "    push rbx");
+            }
             ВидИнструкции::БитИли => {
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    pop rbx");
