@@ -29,6 +29,10 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    mov rax, {значение}");
                 let _ = writeln!(файл, "    push rax");
             }
+            ВидИнструкции::Целое(значение) => {
+                let _ = writeln!(файл, "    mov rax, {значение}");
+                let _ = writeln!(файл, "    push rax");
+            }
             ВидИнструкции::ГлобальныеДанные(смещение) => {
                 if *смещение < 0 {
                     let _ = writeln!(файл, "    mov rax, данные{смещение}");
@@ -197,12 +201,50 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    setl cl");
                 let _ = writeln!(файл, "    push rcx");
             }
+            ВидИнструкции::ЦелБольше => {
+                let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    xor rcx, rcx");
+                let _ = writeln!(файл, "    cmp rax, rbx");
+                let _ = writeln!(файл, "    setg cl");
+                let _ = writeln!(файл, "    push rcx");
+            }
+            ВидИнструкции::ЦелУмножение => {
+                let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    xor rdx, rdx");
+                let _ = writeln!(файл, "    imul rbx");
+                let _ = writeln!(файл, "    push rax");
+            }
+            ВидИнструкции::ЦелОстаток => {
+                let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    xor rdx, rdx");
+                let _ = writeln!(файл, "    idiv rbx");
+                let _ = writeln!(файл, "    push rdx");
+            }
             ВидИнструкции::ЦелОтриц => {
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    neg rax");
                 let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::КонвертНат64Вещ32 => {
+                // СДЕЛАТЬ: конвертация натуральных чисел в вещественные (и обратно) использует знаковую конвертацию.
+                //
+                // В общем, ничего плохого в этом нет до тех пор пока натуральные числе
+                // не слишком большие.
+                //
+                // Для больших натуральных чисел нам нужно использовать трюки, которые
+                // используют компиляторы языка Си: делим значение на два, чтобы убрать
+                // бит знака, конвертируем споловиненное значение, и умножаем вещественный
+                // результат обратно на два. С учётом остатков конечно же.
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    pxor xmm0, xmm0");
+                let _ = writeln!(файл, "    cvtsi2ss xmm0, rax");
+                let _ = writeln!(файл, "    movd eax, xmm0");
+                let _ = writeln!(файл, "    push rax");
+            }
+            ВидИнструкции::КонвертЦел64Вещ32 => {
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    pxor xmm0, xmm0");
                 let _ = writeln!(файл, "    cvtsi2ss xmm0, rax");
@@ -210,6 +252,12 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::КонвертВещ32Нат64 => {
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    movd xmm0, eax");
+                let _ = writeln!(файл, "    cvttss2si rax, xmm0");
+                let _ = writeln!(файл, "    push rax");
+            }
+            ВидИнструкции::КонвертВещ32Цел64 => {
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    movd xmm0, eax");
                 let _ = writeln!(файл, "    cvttss2si rax, xmm0");
@@ -335,7 +383,7 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    call {имя}", имя = внешние_символы[*индекс].0);
                 if let Some(результат) = результат {
                     match результат {
-                        Тип::Нат64 | Тип::Лог => {
+                        Тип::Нат64 | Тип::Цел64 | Тип::Лог => {
                             let _ = writeln!(файл, "    push rax");
                         },
                         Тип::Вещ32 => {
