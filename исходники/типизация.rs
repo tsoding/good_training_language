@@ -3,12 +3,14 @@ use std::collections::HashMap;
 use диагностика::*;
 use лексика::*;
 
+#[derive(Clone)]
 pub struct Поле {
     pub имя: Лексема,
     pub тип: Тип,
     pub смещение: usize,
 }
 
+#[derive(Clone)]
 pub struct Структура {
     pub имя: Лексема,
     pub размер: usize,
