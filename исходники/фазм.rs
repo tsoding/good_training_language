@@ -101,6 +101,7 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
             }
             ВидИнструкции::ПрочитатьБезЗнак8 => {
                 let _ = writeln!(файл, "    pop rsi");
+                let _ = writeln!(файл, "    xor rax, rax");
                 let _ = writeln!(файл, "    mov al, [rsi]");
                 let _ = writeln!(файл, "    push rax");
             }
@@ -110,6 +111,7 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
             }
             ВидИнструкции::ПрочитатьБезЗнак32 => {
                 let _ = writeln!(файл, "    pop rsi");
+                let _ = writeln!(файл, "    xor rax, rax");
                 let _ = writeln!(файл, "    mov eax, [rsi]");
                 let _ = writeln!(файл, "    push rax");
             }
