@@ -28,6 +28,11 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
             ВидИнструкции::Вытолкнуть => {
                 let _ = writeln!(файл, "    pop rax");
             }
+            ВидИнструкции::Продублировать => {
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    push rax");
+                let _ = writeln!(файл, "    push rax");
+            }
             ВидИнструкции::Натуральное(значение) => {
                 let _ = writeln!(файл, "    mov rax, {значение}");
                 let _ = writeln!(файл, "    push rax");
