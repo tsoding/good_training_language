@@ -389,6 +389,10 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    and rbx, rcx");
                 let _ = writeln!(файл, "    push rbx");
             }
+            ВидИнструкции::ЛогЛибо => {
+                сделать!(&инструкция.лок, "Кодогенерация инструкции «{вид:?}»", вид = инструкция.вид);
+                return Err(())
+            }
             ВидИнструкции::БитИли => {
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    pop rbx");
@@ -399,6 +403,12 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    pop rbx");
                 let _ = writeln!(файл, "    and rax, rbx");
+                let _ = writeln!(файл, "    push rax");
+            }
+            ВидИнструкции::БитЛибо => {
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    xor rax, rbx");
                 let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::БитСмещениеВлево => {
