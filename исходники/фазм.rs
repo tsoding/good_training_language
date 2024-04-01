@@ -198,8 +198,12 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 // перемещение для реализации инструкций сравнения?
             }
             ВидИнструкции::НатМеньшеРавно => {
-                сделать!(&инструкция.лок, "Кодогенерация инструкции «{вид:?}»", вид = инструкция.вид);
-                return Err(())
+                let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    xor rcx, rcx");
+                let _ = writeln!(файл, "    cmp rax, rbx");
+                let _ = writeln!(файл, "    setbe cl");
+                let _ = writeln!(файл, "    push rcx");
             }
             ВидИнструкции::НатБольше => {
                 let _ = writeln!(файл, "    pop rbx");
@@ -210,8 +214,12 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    push rcx");
             }
             ВидИнструкции::НатБольшеРавно => {
-                сделать!(&инструкция.лок, "Кодогенерация инструкции «{вид:?}»", вид = инструкция.вид);
-                return Err(())
+                let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    xor rcx, rcx");
+                let _ = writeln!(файл, "    cmp rax, rbx");
+                let _ = writeln!(файл, "    setae cl");
+                let _ = writeln!(файл, "    push rcx");
             }
             ВидИнструкции::НатРавно => {
                 let _ = writeln!(файл, "    pop rbx");
@@ -246,8 +254,12 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    push rcx");
             }
             ВидИнструкции::ЦелБольшеРавно => {
-                сделать!(&инструкция.лок, "Кодогенерация инструкции «{вид:?}»", вид = инструкция.вид);
-                return Err(())
+                let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    xor rcx, rcx");
+                let _ = writeln!(файл, "    cmp rax, rbx");
+                let _ = writeln!(файл, "    setge cl");
+                let _ = writeln!(файл, "    push rcx");
             }
             ВидИнструкции::ЦелУмножение => {
                 let _ = writeln!(файл, "    pop rbx");
@@ -356,10 +368,24 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::Вещ32МеньшеРавно => {
-                сделать!(&инструкция.лок, "Кодогенерация инструкции «{вид:?}»", вид = инструкция.вид);
-                return Err(())
+                let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    movd xmm0, eax");
+                let _ = writeln!(файл, "    movd xmm1, ebx");
+                let _ = writeln!(файл, "    cmpless xmm0, xmm1");
+                let _ = writeln!(файл, "    movd eax, xmm0");
+                let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::Вещ32Больше => {
+                let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    movd xmm0, eax");
+                let _ = writeln!(файл, "    movd xmm1, ebx");
+                let _ = writeln!(файл, "    cmpnless xmm0, xmm1");
+                let _ = writeln!(файл, "    movd eax, xmm0");
+                let _ = writeln!(файл, "    push rax");
+            }
+            ВидИнструкции::Вещ32БольшеРавно => {
                 let _ = writeln!(файл, "    pop rbx");
                 let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    movd xmm0, eax");
@@ -367,10 +393,6 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    cmpnltss xmm0, xmm1");
                 let _ = writeln!(файл, "    movd eax, xmm0");
                 let _ = writeln!(файл, "    push rax");
-            }
-            ВидИнструкции::Вещ32БольшеРавно => {
-                сделать!(&инструкция.лок, "Кодогенерация инструкции «{вид:?}»", вид = инструкция.вид);
-                return Err(())
             }
             ВидИнструкции::Вещ32Отриц => {
                 let _ = writeln!(файл, "    mov eax, 0x80000000");
