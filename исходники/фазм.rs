@@ -256,6 +256,13 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    imul rbx");
                 let _ = writeln!(файл, "    push rax");
             }
+            ВидИнструкции::ЦелДеление => {
+                let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    xor rdx, rdx");
+                let _ = writeln!(файл, "    idiv rbx");
+                let _ = writeln!(файл, "    push rax");
+            }
             ВидИнструкции::ЦелОстаток => {
                 let _ = writeln!(файл, "    pop rbx");
                 let _ = writeln!(файл, "    pop rax");
@@ -327,6 +334,15 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    movd xmm0, eax");
                 let _ = writeln!(файл, "    movd xmm1, ebx");
                 let _ = writeln!(файл, "    addss xmm0, xmm1");
+                let _ = writeln!(файл, "    movd eax, xmm0");
+                let _ = writeln!(файл, "    push rax");
+            }
+            ВидИнструкции::Вещ32Вычитание => {
+                let _ = writeln!(файл, "    pop rax");
+                let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    movd xmm0, eax");
+                let _ = writeln!(файл, "    movd xmm1, ebx");
+                let _ = writeln!(файл, "    subss xmm0, xmm1");
                 let _ = writeln!(файл, "    movd eax, xmm0");
                 let _ = writeln!(файл, "    push rax");
             }
