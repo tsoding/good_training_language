@@ -145,8 +145,14 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    rep movsb");
             }
             ВидИнструкции::ПамятьРавно => {
-                сделать!(&инструкция.лок, "Кодогенерация инструкции «{вид:?}»", вид = инструкция.вид);
-                return Err(());
+                let _ = writeln!(файл, "    xor rax, rax");
+                let _ = writeln!(файл, "    cld");
+                let _ = writeln!(файл, "    pop rcx");
+                let _ = writeln!(файл, "    pop rdi");
+                let _ = writeln!(файл, "    pop rsi");
+                let _ = writeln!(файл, "    rep cmpsb");
+                let _ = writeln!(файл, "    setz al");
+                let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::НатСложение => {
                 let _ = writeln!(файл, "    pop rbx");
