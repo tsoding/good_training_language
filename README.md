@@ -8,7 +8,7 @@
 
 ## Быстрый Старт
 
-Вам потребуется установить компилятор [Rust](https://www.rust-lang.org/).
+Вам потребуется установить компилятор [Rust](https://www.rust-lang.org/) и [fasm](https://flatassembler.net/).
 
 ```console
 $ rustc ./исходники/хуяк.rs
