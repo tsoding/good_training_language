@@ -332,8 +332,8 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
                 let _ = writeln!(файл, "    push rax");
             }
             ВидИнструкции::Вещ32Деление => {
-                let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    pop rbx");
+                let _ = writeln!(файл, "    pop rax");
                 let _ = writeln!(файл, "    movd xmm0, eax");
                 let _ = writeln!(файл, "    movd xmm1, ebx");
                 let _ = writeln!(файл, "    divss xmm0, xmm1");
