@@ -271,7 +271,7 @@ fn сгенерировать_инструкции(файл: &mut impl Write, п
             ВидИнструкции::ЦелДеление => {
                 let _ = writeln!(файл, "    pop rbx");
                 let _ = writeln!(файл, "    pop rax");
-                let _ = writeln!(файл, "    xor rdx, rdx");
+                let _ = writeln!(файл, "    cqo");
                 let _ = writeln!(файл, "    idiv rbx");
                 let _ = writeln!(файл, "    push rax");
             }
