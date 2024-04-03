@@ -200,7 +200,7 @@ impl<'ы> Машина<'ы> {
                         eprintln!("  {имя}: {адрес:#X} = {:?}", &self.память[адрес..адрес+переменная.тип.размер(&имена.структуры)]);
                     }
                     loop {
-                        let mut команда = String::new();
+                        let mut команда = Строка::new();
                         eprint!("> ");
                         io::stdin().lock().read_line(&mut команда).unwrap();
                         let аргы: Вектор<&str> = команда.trim().split(' ').filter(|арг| арг.len() > 0).collect();

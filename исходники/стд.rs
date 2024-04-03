@@ -1,6 +1,7 @@
 pub mod прелюдия {
     pub use super::{Опция, Некий, Нету, РасширениеОпции};
     pub use super::{Хорош, Ошиб};
+    pub use super::{Строка, ВСтроку};
 }
 
 pub use std::option::Option as Опция;
@@ -25,6 +26,18 @@ impl<Тэ> РасширениеОпции for Опция<Тэ> {
 pub use std::result::Result as Результат;
 pub use std::result::Result::Ok as Хорош;
 pub use std::result::Result::Err as Ошиб;
+
+pub use std::string::String as Строка;
+
+pub trait ВСтроку {
+    fn в_строку(&self) -> Строка;
+}
+
+impl<Тэ: ToString> ВСтроку for Тэ {
+    fn в_строку(&self) -> Строка {
+        self.to_string()
+    }
+}
 
 macro_rules! вектор {
     ($( $t:tt )*) => { vec![$( $t )*] }
