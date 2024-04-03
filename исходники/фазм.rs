@@ -1,4 +1,5 @@
 use стд::прелюдия::*;
+use стд::коллекции::Вектор;
 use std::fs;
 use std::io::{self, Write};
 use std::path::Path;
@@ -9,7 +10,7 @@ use типизация::*;
 use Результат;
 
 fn сгенерировать_инструкции(файл: &mut impl Write, пп: &ПП, точка_входа_программы: usize) -> Результат<()> {
-    let mut внешние_символы: Vec<_> = пп.внешние_символы.iter().collect();
+    let mut внешние_символы: Вектор<_> = пп.внешние_символы.iter().collect();
     внешние_символы.sort_by_key(|(_, индекс)| *индекс);
     // https://stackoverflow.com/questions/18024672/what-registers-are-preserved-through-a-linux-x86-64-function-call
     let _ = writeln!(файл, "    mov r12, начало_второго_стека");
@@ -617,7 +618,7 @@ pub fn сгенерировать_исполняемый_файл(путь_к_и
             .arg("-dynamic-linker").arg("/lib64/ld-linux-x86-64.so.2")
             // СДЕЛАТЬ: расхардкодить пусть к линкуемым библиотекам
             .arg("-L./модули/");
-        let mut библиотеки: Vec<_> = пп.библиотеки.iter().collect();
+        let mut библиотеки: Вектор<_> = пп.библиотеки.iter().collect();
         библиотеки.sort_by_key(|(_, индекс)| *индекс);
         for (имя, _) in &библиотеки {
             кмд.arg(format!("-l{имя}"));

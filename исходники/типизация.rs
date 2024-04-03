@@ -1,6 +1,6 @@
 use стд::прелюдия::*;
+use стд::коллекции::ХэшТаблица;
 use super::Результат;
-use std::collections::HashMap;
 use диагностика::*;
 use лексика::*;
 
@@ -15,7 +15,7 @@ pub struct Поле {
 pub struct Структура {
     pub имя: Лексема,
     pub размер: usize,
-    pub поля: HashMap<String, Поле>,
+    pub поля: ХэшТаблица<String, Поле>,
 }
 
 #[derive(PartialEq, Debug, Clone)]
@@ -62,7 +62,7 @@ impl Тип {
         }
     }
 
-    pub fn размер(&self, структуры: &HashMap<String, Структура>) -> usize {
+    pub fn размер(&self, структуры: &ХэшТаблица<String, Структура>) -> usize {
         match self {
             Тип::Нат8 => 1,
             Тип::Нат64 => 8,

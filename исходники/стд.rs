@@ -25,3 +25,12 @@ impl<Тэ> РасширениеОпции for Опция<Тэ> {
 pub use std::result::Result as Результат;
 pub use std::result::Result::Ok as Хорош;
 pub use std::result::Result::Err as Ошиб;
+
+macro_rules! вектор {
+    ($( $t:tt )*) => { vec![$( $t )*] }
+}
+
+pub mod коллекции {
+    pub use std::vec::Vec as Вектор;
+    pub use std::collections::HashMap as ХэшТаблица;
+}
