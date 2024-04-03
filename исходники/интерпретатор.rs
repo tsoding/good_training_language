@@ -1,5 +1,4 @@
 use стд::прелюдия::*;
-use стд::коллекции::Вектор;
 use std::io;
 use std::io::{Read, Write, BufRead};
 use std::convert::TryInto;

@@ -1,5 +1,4 @@
 use стд::прелюдия::*;
-use стд::коллекции::Вектор;
 use std::fs;
 use std::env;
 use std::io;

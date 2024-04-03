@@ -2,6 +2,7 @@ pub mod прелюдия {
     pub use super::{Опция, Некий, Нету, РасширениеОпции};
     pub use super::{Хорош, Ошиб};
     pub use super::{Строка, ВСтроку};
+    pub use super::коллекции::Вектор;
 }
 
 pub use std::option::Option as Опция;

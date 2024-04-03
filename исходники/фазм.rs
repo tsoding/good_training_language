@@ -1,5 +1,4 @@
 use стд::прелюдия::*;
-use стд::коллекции::Вектор;
 use std::fs;
 use std::io::{self, Write};
 use std::path::Path;
