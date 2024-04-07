@@ -1,0 +1,3 @@
+[submodule "редакторы/vim-хуя"]
+	path = редакторы/vim-хуя
+	url = https://github.com/Vftdan/vim-good_training_language
